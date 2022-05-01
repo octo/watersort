@@ -20,16 +20,16 @@ solver$ ./solver -input=level.json
 This uses the provided sample data, Water Sort Puzzle's infamous level 105:
 
 ```
-$ time ./solver -input testdata/level105.json
-2022/05/01 09:35:44 Evaluated 34884 states to find solution
-Step  1: pour  6 onto 13
-Step  2: pour  5 onto  6
-Step  3: pour  6 onto 14
+$ time ./solver <testdata/level105.json
+2022/05/01 21:15:12 Evaluated 20637 states to find solution
+Step  1: pour  6 onto 14
+Step  2: pour  6 onto 13
+Step  3: pour  7 onto  6
 Step  4: pour 10 onto  6
-Step  5: pour  7 onto  6
-Step  6: pour 10 onto 13
+Step  5: pour  5 onto 13
+Step  6: pour 10 onto 14
 Step  7: pour 11 onto 10
-Step  8: pour 11 onto 13
+Step  8: pour 11 onto 14
 Step  9: pour  8 onto 11
 Step 10: pour  7 onto  8
 Step 11: pour  7 onto  5
@@ -37,36 +37,36 @@ Step 12: pour  7 onto 11
 Step 13: pour  2 onto  7
 Step 14: pour  8 onto  7
 Step 15: pour  2 onto  8
-Step 16: pour  9 onto  2
-Step 17: pour  9 onto 10
-Step 18: pour 12 onto  2
-Step 19: pour  9 onto 12
-Step 20: pour  1 onto  9
-Step 21: pour  1 onto 14
-Step 22: pour 12 onto  1
-Step 23: pour  8 onto 12
-Step 24: pour 11 onto  8
-Step 25: pour  9 onto 11
-Step 26: pour 12 onto  9
+Step 16: pour 12 onto  2
+Step 17: pour  9 onto  2
+Step 18: pour  9 onto 10
+Step 19: pour 12 onto  9
+Step 20: pour  8 onto 12
+Step 21: pour 11 onto  8
+Step 22: pour  1 onto 11
+Step 23: pour  1 onto 13
+Step 24: pour  9 onto  1
+Step 25: pour 11 onto  9
+Step 26: pour 12 onto 11
 Step 27: pour  3 onto 12
-Step 28: pour  3 onto  7
-Step 29: pour  4 onto 12
-Step 30: pour  4 onto  9
-Step 31: pour  3 onto  4
-Step 32: pour  6 onto  3
-Step 33: pour  6 onto 14
-Step 34: pour  4 onto  6
-Step 35: pour  4 onto 12
-Step 36: pour 10 onto  4
-Step 37: pour  2 onto 10
-Step 38: pour  5 onto  6
-Step 39: pour  5 onto 13
-Step 40: pour 11 onto  5
-Step 41: pour  2 onto  4
+Step 28: pour  4 onto 12
+Step 29: pour  3 onto  7
+Step 30: pour  4 onto 11
+Step 31: pour  4 onto  3
+Step 32: pour  4 onto 12
+Step 33: pour  3 onto  4
+Step 34: pour  5 onto  4
+Step 35: pour  6 onto  3
+Step 36: pour  5 onto 14
+Step 37: pour  9 onto  5
+Step 38: pour  6 onto 13
+Step 39: pour 10 onto  6
+Step 40: pour  2 onto 10
+Step 41: pour  6 onto  2
 
-real    0m0.386s
-user    0m0.391s
-sys     0m0.125s
+real    0m0.158s
+user    0m0.047s
+sys     0m0.078s
 ```
 
 ## Algorithm
