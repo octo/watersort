@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/octo/watersort"
 )
@@ -16,6 +18,8 @@ var (
 
 func main() {
 	flag.Parse()
+
+	rand.Seed(time.Now().UnixMicro())
 
 	var in io.Reader = os.Stdin
 	if *input != "" {

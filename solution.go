@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"fmt"
 	"log"
+	"math/rand"
 )
 
 type Solution struct {
@@ -49,6 +50,11 @@ func (s Solution) PossibleSteps() []Step {
 			ret = append(ret, Step{From: srcIndex, To: dstIndex})
 		}
 	}
+
+	rand.Shuffle(len(ret), func(i, j int) {
+		ret[i], ret[j] = ret[j], ret[i]
+	})
+
 	return ret
 }
 
