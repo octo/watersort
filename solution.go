@@ -2,15 +2,16 @@ package watersort
 
 import (
 	"container/heap"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
 )
 
 type Solution struct {
-	State    *State
-	Steps    []Step
-	Distance int
+	State State
+	Steps []Step
+	Score int
 }
 
 // Clone returns a deep copy of s.
@@ -20,9 +21,9 @@ func (s Solution) Clone() Solution {
 	copy(steps, s.Steps)
 
 	return Solution{
-		State:    &state,
-		Steps:    steps,
-		Distance: s.Distance,
+		State: state,
+		Steps: steps,
+		Score: s.Score,
 	}
 }
 
@@ -91,7 +92,7 @@ func (h Heap) Len() int {
 
 func (h Heap) Less(i, j int) bool {
 	return h.Solutions[i].Distance < h.Solutions[j].Distance
-}
+	}
 
 func (h *Heap) Swap(i, j int) {
 	h.Solutions[i], h.Solutions[j] = h.Solutions[j], h.Solutions[i]
@@ -108,15 +109,27 @@ func (h *Heap) Pop() any {
 	return s
 }
 
+var ErrNoSolution = errors.New("there is no solution")
+
+// FindSolution calculates an optimal solution for s using an A* search algorithm.
+//
+// The score of each (partial) solution is calculated as the sum of the number
+// of steps so far (len(Solution.Steps)) and Solution.State.MinRequiredMoves().
+//
+// If s is unsolvable, an error is returned.
+// Use `errors.Is(ErrNoSolution)` to distinguish between this and other errors.
 func FindSolution(s State) ([]Step, error) {
 	sol := Solution{
-		State: &s,
+		State: s,
 	}
 
+	// h holds partial solutions.
+	// Pop() returns (one of) the solution closest to a solved state.
 	h := &Heap{}
 	heap.Init(h)
 	heap.Push(h, sol)
 
+	// seen holds the CRC32 checksum of previously seen states to avoid cycles.
 	seen := make(map[uint32]bool)
 
 	for len(h.Solutions) > 0 {
@@ -138,7 +151,7 @@ func FindSolution(s State) ([]Step, error) {
 			next.Steps = append(next.Steps, step)
 
 			minRequiredMoves := next.State.MinRequiredMoves()
-			next.Distance = len(next.Steps) + minRequiredMoves
+			next.Score = len(next.Steps) + minRequiredMoves
 			// log.Printf("Distance: %2d + %2d = %2d", len(next.Steps), minRequiredMoves, next.Distance)
 			if minRequiredMoves == 0 {
 				log.Printf("Evaluated %d states to find solution", len(seen))
@@ -149,5 +162,5 @@ func FindSolution(s State) ([]Step, error) {
 			heap.Push(h, next)
 		}
 	}
-	return nil, fmt.Errorf("unable to find solution; evaluated %d states", len(seen))
+	return nil, fmt.Errorf("evaluated %d states: %w", len(seen), ErrNoSolution)
 }
