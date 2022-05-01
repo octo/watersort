@@ -82,27 +82,35 @@ func (s Step) String() string {
 	return fmt.Sprintf("pour %2d onto %2d", s.From+1, s.To+1)
 }
 
-type Heap struct {
+type minHeap struct {
 	Solutions []Solution
 }
 
-func (h Heap) Len() int {
+func (h minHeap) Len() int {
 	return len(h.Solutions)
 }
 
-func (h Heap) Less(i, j int) bool {
-	return h.Solutions[i].Distance < h.Solutions[j].Distance
+func (h minHeap) Less(i, j int) bool {
+	a, b := h.Solutions[i], h.Solutions[j]
+	if a.Score != b.Score {
+		return a.Score < b.Score
 	}
 
-func (h *Heap) Swap(i, j int) {
+	// Tie breaker: sort solutions with many steps in front of solutions with fewer steps.
+	// This leads to the algorithm "greedily" trying longer solutions first,
+	// before back-tracking to shorter solutions.
+	return len(a.Steps) > len(b.Steps)
+}
+
+func (h *minHeap) Swap(i, j int) {
 	h.Solutions[i], h.Solutions[j] = h.Solutions[j], h.Solutions[i]
 }
 
-func (h *Heap) Push(x any) {
+func (h *minHeap) Push(x any) {
 	h.Solutions = append(h.Solutions, x.(Solution))
 }
 
-func (h *Heap) Pop() any {
+func (h *minHeap) Pop() any {
 	last := h.Len() - 1
 	s := h.Solutions[last]
 	h.Solutions = h.Solutions[:last]
@@ -125,7 +133,7 @@ func FindSolution(s State) ([]Step, error) {
 
 	// h holds partial solutions.
 	// Pop() returns (one of) the solution closest to a solved state.
-	h := &Heap{}
+	h := &minHeap{}
 	heap.Init(h)
 	heap.Push(h, sol)
 
