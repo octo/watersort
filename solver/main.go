@@ -41,6 +41,6 @@ func main() {
 	}
 
 	for i, step := range steps {
-		fmt.Printf("Step %2d: pour %2d onto %2d\n", i+1, step.From+1, step.To+1)
+		fmt.Printf("Step %2d: %v\n", i+1, step)
 	}
 }

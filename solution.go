@@ -77,6 +77,10 @@ type Step struct {
 	From, To int
 }
 
+func (s Step) String() string {
+	return fmt.Sprintf("pour %2d onto %2d", s.From+1, s.To+1)
+}
+
 type Heap struct {
 	Solutions []Solution
 }
