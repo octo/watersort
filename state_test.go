@@ -1,6 +1,9 @@
 package watersort
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -163,6 +166,37 @@ func TestBottle_MinRequiredMoves(t *testing.T) {
 
 			if got := b.MinRequiredMoves(); got != tc.want {
 				t.Errorf("MinRequiredMoves() = %d, want %d", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestTestdata(t *testing.T) {
+	path := filepath.Join("solver", "testdata")
+	dirEntries, err := os.ReadDir(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, de := range dirEntries {
+		if de.IsDir() || !strings.HasSuffix(de.Name(), ".json") {
+			continue
+		}
+
+		t.Run(de.Name(), func(t *testing.T) {
+			f, err := os.Open(filepath.Join(path, de.Name()))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
+
+			state, err := LoadLevel(f)
+			if err != nil {
+				t.Fatalf("LoadLevel(): %v", err)
+			}
+
+			if err := state.sanityCheck(); err != nil {
+				t.Errorf("sanityCheck(): %v", err)
 			}
 		})
 	}
