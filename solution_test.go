@@ -1,7 +1,6 @@
 package watersort
 
 import (
-	"log"
 	"testing"
 )
 
@@ -25,11 +24,13 @@ var level105 = State{
 	},
 }
 
+const level105OptimalSolution = 41
+
 func TestFindSolution(t *testing.T) {
 	cases := []struct {
 		name string
 		in   State
-		// want []Step
+		want int
 	}{
 		{
 			name: "solve puzzle",
@@ -49,6 +50,7 @@ func TestFindSolution(t *testing.T) {
 					{Colors: []Color{Empty, Empty, Empty, Empty}},
 				},
 			},
+			want: 31,
 		},
 	}
 
@@ -63,10 +65,26 @@ func TestFindSolution(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			log.Printf("Number of steps: %d", len(steps))
-			for i, step := range steps {
-				log.Printf("Step %2d: pour %2d onto %2d", i+1, step.From+1, step.To+1)
+			if got := len(steps); got != tc.want {
+				t.Errorf("solution has %d steps, want %d", got, tc.want)
 			}
 		})
+	}
+}
+
+func BenchmarkFindSolution(b *testing.B) {
+	if err := level105.sanityCheck(); err != nil {
+		b.Fatal(err)
+	}
+
+	for i := 0; i < b.N; i++ {
+		steps, err := FindSolution(level105.Clone())
+		if err != nil {
+			b.Error(err)
+		}
+
+		if got, want := len(steps), level105OptimalSolution; got != want {
+			b.Errorf("got solution with %d steps, want %d", got, want)
+		}
 	}
 }
