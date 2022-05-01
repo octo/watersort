@@ -76,8 +76,10 @@ func (s *State) Pour(from, to int) error {
 }
 
 func (s State) MinRequiredMoves() int {
-	var ret int
-	bottomColors := make(map[Color]int)
+	var (
+		ret          int
+		bottomColors = make(map[Color]int, len(s.Bottles))
+	)
 	for _, b := range s.Bottles {
 		ret += b.MinRequiredMoves()
 
