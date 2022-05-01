@@ -13,6 +13,7 @@ type Solution struct {
 	Distance int
 }
 
+// Clone returns a deep copy of s.
 func (s Solution) Clone() Solution {
 	state := s.State.Clone()
 	steps := make([]Step, len(s.Steps))
@@ -25,6 +26,20 @@ func (s Solution) Clone() Solution {
 	}
 }
 
+// PossibleSteps returns all available next steps.
+// If there are no possible moves (meaning the game is lost) it returns nil.
+//
+// First, the function creates a map of colors to possible destinations
+// (i.e. bottles that are not full and where c is the top color, and empty bottles).
+//
+// Then it iterates over each bottle, determines its top color, and finds
+// possible destination for this color using the precomputed map.
+//
+// Precomputing possible destinations per color reduces the bottle selection complexity from O(n²) to O(n)
+// (where n is the number of bottles/colors), assuming that Bottle.TopColor() is O(1).
+// (Bottle.TopColor() needs to skip empty spaces, of which there are (usually) 2× m, where m is the bottle size.
+// Assuming a linear relationship between n and m, armortized runtime of Bottle.TopColor() is constant.
+// Usually n > m.)
 func (s Solution) PossibleSteps() []Step {
 	destinationsByColor := make(map[Color][]int)
 	for i, b := range s.State.Bottles {
