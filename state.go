@@ -27,9 +27,9 @@ func LoadLevel(r io.Reader) (State, error) {
 }
 
 func (s State) Clone() State {
-	var bottles []Bottle
-	for _, b := range s.Bottles {
-		bottles = append(bottles, b.Clone())
+	bottles := make([]Bottle, len(s.Bottles))
+	for i, b := range s.Bottles {
+		bottles[i] = b.Clone()
 	}
 	return State{
 		Bottles: bottles,
