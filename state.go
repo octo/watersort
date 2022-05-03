@@ -108,16 +108,12 @@ func (s State) Checksum() uint32 {
 	return crc32.ChecksumIEEE(data)
 }
 
-func (s *State) UnmarshalJSON(data []byte) error {
-	var bottles []Bottle
-	if err := json.Unmarshal(data, &bottles); err != nil {
-		return err
-	}
+func (s State) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.Bottles)
+}
 
-	*s = State{
-		Bottles: bottles,
-	}
-	return nil
+func (s *State) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &s.Bottles)
 }
 
 type Bottle struct {
@@ -228,16 +224,12 @@ func (b *Bottle) MinRequiredMoves() int {
 	return ret
 }
 
-func (b *Bottle) UnmarshalJSON(data []byte) error {
-	var colors []Color
-	if err := json.Unmarshal(data, &colors); err != nil {
-		return err
-	}
+func (b Bottle) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.Colors)
+}
 
-	*b = Bottle{
-		Colors: colors,
-	}
-	return nil
+func (b *Bottle) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &b.Colors)
 }
 
 type Color int
