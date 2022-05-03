@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	input = flag.String("input", "", "file to read from")
+	input            = flag.String("input", "", "file to read from")
+	reportComplexity = flag.Bool("report_complexity", false, "print how many states were considered to find the solution")
 )
 
 func main() {
@@ -35,12 +36,16 @@ func main() {
 		log.Fatalln("watersort.LoadLevel():", err)
 	}
 
-	steps, err := watersort.FindSolution(level)
+	var complexity int
+	steps, err := watersort.FindSolution(level, watersort.ReportComplexity(&complexity))
 	if err != nil {
 		log.Fatalln("watersort.FindSolution():", err)
 	}
 
 	for i, step := range steps {
 		fmt.Printf("Step %2d: %v\n", i+1, step)
+	}
+	if *reportComplexity {
+		fmt.Printf("Complexity: %d\n", complexity)
 	}
 }

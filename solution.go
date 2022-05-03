@@ -119,6 +119,18 @@ func (h *minHeap) Pop() any {
 
 var ErrNoSolution = errors.New("there is no solution")
 
+type Option func(*option)
+
+type option struct {
+	reportComplexity *int
+}
+
+func ReportComplexity(out *int) Option {
+	return func(opt *option) {
+		opt.reportComplexity = out
+	}
+}
+
 // FindSolution calculates an optimal solution for s using an A* search algorithm.
 //
 // The score of each (partial) solution is calculated as the sum of the number
@@ -126,9 +138,14 @@ var ErrNoSolution = errors.New("there is no solution")
 //
 // If s is unsolvable, an error is returned.
 // Use `errors.Is(ErrNoSolution)` to distinguish between this and other errors.
-func FindSolution(s State) ([]Step, error) {
+func FindSolution(s State, opts ...Option) ([]Step, error) {
 	sol := Solution{
 		State: s,
+	}
+
+	var opt option
+	for _, f := range opts {
+		f(&opt)
 	}
 
 	// h holds partial solutions.
@@ -162,7 +179,9 @@ func FindSolution(s State) ([]Step, error) {
 			next.Score = len(next.Steps) + minRequiredMoves
 			// log.Printf("Distance: %2d + %2d = %2d", len(next.Steps), minRequiredMoves, next.Distance)
 			if minRequiredMoves == 0 {
-				log.Printf("Evaluated %d states to find solution", len(seen))
+				if opt.reportComplexity != nil {
+					*opt.reportComplexity = len(seen)
+				}
 				return next.Steps, nil
 			}
 
