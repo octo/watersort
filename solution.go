@@ -63,7 +63,11 @@ func (s Solution) PossibleSteps() []Step {
 				continue
 			}
 
-			ret = append(ret, Step{From: srcIndex, To: dstIndex})
+			ret = append(ret, Step{
+				From:  srcIndex,
+				To:    dstIndex,
+				Color: tc,
+			})
 		}
 	}
 
@@ -76,10 +80,11 @@ func (s Solution) PossibleSteps() []Step {
 
 type Step struct {
 	From, To int
+	Color
 }
 
 func (s Step) String() string {
-	return fmt.Sprintf("pour %2d onto %2d", s.From+1, s.To+1)
+	return fmt.Sprintf("pour %2d onto %2d (%v)", s.From+1, s.To+1, s.Color)
 }
 
 type minHeap struct {
