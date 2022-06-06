@@ -74,7 +74,7 @@ func (s server) StateHandler(ctx context.Context, w http.ResponseWriter, req *ht
 		nextState watersort.State
 	)
 	if !solved {
-		steps, err := watersort.FindSolution(state)
+		steps, err := state.Solve()
 		if err != nil {
 			return err
 		}

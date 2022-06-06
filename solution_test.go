@@ -60,7 +60,7 @@ func TestFindSolution(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			steps, err := FindSolution(tc.in)
+			steps, err := tc.in.Solve()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -78,7 +78,7 @@ func BenchmarkFindSolution(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		steps, err := FindSolution(level105.Clone())
+		steps, err := level105.Clone().Solve()
 		if err != nil {
 			b.Error(err)
 		}

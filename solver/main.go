@@ -37,7 +37,7 @@ func main() {
 	}
 
 	var complexity int
-	steps, err := watersort.FindSolution(level, watersort.ReportComplexity(&complexity))
+	steps, err := level.Solve(watersort.ReportComplexity(&complexity))
 	if err != nil {
 		log.Fatalln("watersort.FindSolution():", err)
 	}

@@ -143,7 +143,7 @@ func ReportComplexity(out *int) Option {
 //
 // If s is unsolvable, an error is returned.
 // Use `errors.Is(ErrNoSolution)` to distinguish between this and other errors.
-func FindSolution(s State, opts ...Option) ([]Step, error) {
+func (s State) Solve(opts ...Option) ([]Step, error) {
 	sol := Solution{
 		State: s,
 	}
