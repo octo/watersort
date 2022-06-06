@@ -1,10 +1,12 @@
 package watersort
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"hash/crc32"
 	"io"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -24,6 +26,38 @@ func LoadLevel(r io.Reader) (State, error) {
 	}
 
 	return s, nil
+}
+
+func RandomState(colorsNum, bottleSize int) State {
+	colors := make([]Color, colorsNum*bottleSize)
+	for i := 0; i < colorsNum; i++ {
+		for j := 0; j < bottleSize; j++ {
+			colors[i*bottleSize+j] = Color(i + 1)
+		}
+	}
+
+	rand.Shuffle(len(colors), func(i, j int) {
+		colors[i], colors[j] = colors[j], colors[i]
+	})
+
+	var s State
+	for i := 0; i < colorsNum; i++ {
+		var b Bottle
+
+		for j := 0; j < bottleSize; j++ {
+			b.Colors = append(b.Colors, colors[i*bottleSize+j])
+		}
+
+		s.Bottles = append(s.Bottles, b)
+	}
+
+	var empty Bottle
+	for j := 0; j < bottleSize; j++ {
+		empty.Colors = append(empty.Colors, Empty)
+	}
+	s.Bottles = append(s.Bottles, empty.Clone(), empty.Clone())
+
+	return s
 }
 
 func (s State) Clone() State {
@@ -97,6 +131,10 @@ func (s State) MinRequiredMoves() int {
 	return ret
 }
 
+func (s State) Solved() bool {
+	return s.MinRequiredMoves() == 0
+}
+
 func (s State) Checksum() uint32 {
 	var data []byte
 	for _, b := range s.Bottles {
@@ -108,12 +146,44 @@ func (s State) Checksum() uint32 {
 	return crc32.ChecksumIEEE(data)
 }
 
+func (s State) BottleSize() int {
+	return len(s.Bottles[0].Colors)
+}
+
 func (s State) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.Bottles)
 }
 
 func (s *State) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &s.Bottles)
+}
+
+func (s State) MarshalText() ([]byte, error) {
+	var bottles [][]byte
+	for _, bottle := range s.Bottles {
+		b, err := bottle.MarshalText()
+		if err != nil {
+			return nil, err
+		}
+		bottles = append(bottles, b)
+	}
+
+	return bytes.Join(bottles, []byte("_")), nil
+}
+
+func (s *State) UnmarshalText(text []byte) error {
+	s.Bottles = nil
+
+	bottles := bytes.Split(text, []byte("_"))
+	for _, btxt := range bottles {
+		var b Bottle
+		if err := b.UnmarshalText(btxt); err != nil {
+			return err
+		}
+		s.Bottles = append(s.Bottles, b)
+	}
+
+	return nil
 }
 
 type Bottle struct {
@@ -230,6 +300,28 @@ func (b Bottle) MarshalJSON() ([]byte, error) {
 
 func (b *Bottle) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &b.Colors)
+}
+
+func (b Bottle) MarshalText() ([]byte, error) {
+	var colors []string
+	for _, c := range b.Colors {
+		colors = append(colors, strconv.Itoa(int(c)))
+	}
+	return []byte(strings.Join(colors, "-")), nil
+}
+
+func (b *Bottle) UnmarshalText(text []byte) error {
+	b.Colors = nil
+
+	for _, c := range bytes.Split(text, []byte("-")) {
+		color, err := strconv.Atoi(string(c))
+		if err != nil {
+			return err
+		}
+		b.Colors = append(b.Colors, Color(color))
+	}
+
+	return nil
 }
 
 type Color int
