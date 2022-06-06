@@ -1,0 +1,15 @@
+[
+    ["Yellow", "DarkBlue", "Purple", "Orange"],
+    ["DarkGreen", "Purple", "Yellow", "Orange"],
+    ["LightGreen", "Purple", "LightBlue", "Gray"],
+    ["DarkBlue", "Brown", "Pink", "DarkBlue"],
+    ["Brown", "Gray", "Red", "DarkBlue"],
+    ["Brown", "LightGreen", "LightBlue", "Purple"],
+    ["Orange", "LightBlue", "Gray", "Yellow"],
+    ["Orange", "Pink", "Brown", "LightGreen"],
+    ["DarkGreen", "Gray", "Pink", "Red"],
+    ["Red", "DarkGreen", "LightBlue", "Pink"],
+    ["Red", "LightGreen", "Yellow", "DarkGreen"],
+    ["Empty", "Empty", "Empty", "Empty"],
+    ["Empty", "Empty", "Empty", "Empty"]
+]
