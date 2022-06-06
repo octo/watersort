@@ -105,11 +105,11 @@ func (s State) sanityCheck() error {
 	return nil
 }
 
-func (s *State) Pour(from, to int) error {
-	return s.Bottles[from].PourOnto(&s.Bottles[to])
+func (s *State) Apply(step Step) error {
+	return s.Bottles[step.From].PourOnto(&s.Bottles[step.To])
 }
 
-func (s State) MinRequiredMoves() int {
+func (s State) minRequiredMoves() int {
 	var (
 		ret          int
 		bottomColors = make(map[Color]int, len(s.Bottles))
@@ -132,10 +132,10 @@ func (s State) MinRequiredMoves() int {
 }
 
 func (s State) Solved() bool {
-	return s.MinRequiredMoves() == 0
+	return s.minRequiredMoves() == 0
 }
 
-func (s State) Checksum() uint32 {
+func (s State) checksum() uint32 {
 	var data []byte
 	for _, b := range s.Bottles {
 		for _, c := range b.Colors {

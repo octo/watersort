@@ -81,7 +81,7 @@ func (s server) StateHandler(ctx context.Context, w http.ResponseWriter, req *ht
 		step = steps[0]
 
 		nextState = state.Clone()
-		if err := nextState.Pour(step.From, step.To); err != nil {
+		if err := nextState.Apply(step); err != nil {
 			return err
 		}
 	}

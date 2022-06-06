@@ -8,19 +8,19 @@ import (
 	"math/rand"
 )
 
-type Solution struct {
+type solution struct {
 	State State
 	Steps []Step
 	Score int
 }
 
 // Clone returns a deep copy of s.
-func (s Solution) Clone() Solution {
+func (s solution) Clone() solution {
 	state := s.State.Clone()
 	steps := make([]Step, len(s.Steps))
 	copy(steps, s.Steps)
 
-	return Solution{
+	return solution{
 		State: state,
 		Steps: steps,
 		Score: s.Score,
@@ -41,7 +41,7 @@ func (s Solution) Clone() Solution {
 // (Bottle.TopColor() needs to skip empty spaces, of which there are (usually) 2× m, where m is the bottle size.
 // Assuming a linear relationship between n and m, armortized runtime of Bottle.TopColor() is constant.
 // Usually n > m.)
-func (s Solution) PossibleSteps() []Step {
+func (s solution) PossibleSteps() []Step {
 	destinationsByColor := make(map[Color][]int)
 	for i, b := range s.State.Bottles {
 		if b.FreeSlots() == 0 {
@@ -78,6 +78,7 @@ func (s Solution) PossibleSteps() []Step {
 	return ret
 }
 
+// Step represents one state change, i.e. the pouring from bottle "From" to bottle "To".
 type Step struct {
 	From, To int
 	Color
@@ -88,7 +89,7 @@ func (s Step) String() string {
 }
 
 type minHeap struct {
-	Solutions []Solution
+	Solutions []solution
 }
 
 func (h minHeap) Len() int {
@@ -112,7 +113,7 @@ func (h *minHeap) Swap(i, j int) {
 }
 
 func (h *minHeap) Push(x any) {
-	h.Solutions = append(h.Solutions, x.(Solution))
+	h.Solutions = append(h.Solutions, x.(solution))
 }
 
 func (h *minHeap) Pop() any {
@@ -136,7 +137,7 @@ func ReportComplexity(out *int) Option {
 	}
 }
 
-// FindSolution calculates an optimal solution for s using an A* search algorithm.
+// Solve calculates an optimal solution for s using an A* search algorithm.
 //
 // The score of each (partial) solution is calculated as the sum of the number
 // of steps so far (len(Solution.Steps)) and Solution.State.MinRequiredMoves().
@@ -144,7 +145,7 @@ func ReportComplexity(out *int) Option {
 // If s is unsolvable, an error is returned.
 // Use `errors.Is(ErrNoSolution)` to distinguish between this and other errors.
 func (s State) Solve(opts ...Option) ([]Step, error) {
-	sol := Solution{
+	sol := solution{
 		State: s,
 	}
 
@@ -163,24 +164,24 @@ func (s State) Solve(opts ...Option) ([]Step, error) {
 	seen := make(map[uint32]bool)
 
 	for len(h.Solutions) > 0 {
-		base := heap.Pop(h).(Solution)
+		base := heap.Pop(h).(solution)
 
 		for _, step := range base.PossibleSteps() {
 			next := base.Clone()
 
-			if err := next.State.Pour(step.From, step.To); err != nil {
-				log.Printf("State.Pour(%d, %d): %v", step.From, step.To, err)
+			if err := next.State.Apply(step); err != nil {
+				log.Printf("State.Apply(%v): %v", step, err)
 				continue
 			}
 
-			chk := next.State.Checksum()
+			chk := next.State.checksum()
 			if seen[chk] {
 				continue
 			}
 
 			next.Steps = append(next.Steps, step)
 
-			minRequiredMoves := next.State.MinRequiredMoves()
+			minRequiredMoves := next.State.minRequiredMoves()
 			next.Score = len(next.Steps) + minRequiredMoves
 			// log.Printf("Distance: %2d + %2d = %2d", len(next.Steps), minRequiredMoves, next.Distance)
 			if minRequiredMoves == 0 {

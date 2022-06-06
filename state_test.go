@@ -11,15 +11,14 @@ import (
 
 func TestPour(t *testing.T) {
 	cases := []struct {
-		name     string
-		in       State
-		from, to int
-		want     State
+		name string
+		in   State
+		step Step
+		want State
 	}{
 		{
 			name: "into empty bottle",
-			from: 0,
-			to:   3,
+			step: Step{From: 0, To: 3},
 			in: State{
 				Bottles: []Bottle{
 					{Colors: []Color{Red, Green, Blue}},
@@ -41,8 +40,7 @@ func TestPour(t *testing.T) {
 		},
 		{
 			name: "into non-empty bottle",
-			from: 2,
-			to:   0,
+			step: Step{From: 2, To: 0},
 			in: State{
 				Bottles: []Bottle{
 					{Colors: []Color{Red, Green, Empty}},
@@ -64,8 +62,7 @@ func TestPour(t *testing.T) {
 		},
 		{
 			name: "partial pour",
-			from: 2,
-			to:   0,
+			step: Step{From: 2, To: 0},
 			in: State{
 				Bottles: []Bottle{
 					{Colors: []Color{Red, Green, Empty}},
@@ -87,8 +84,7 @@ func TestPour(t *testing.T) {
 		},
 		{
 			name: "clean out a bottle",
-			from: 3,
-			to:   0,
+			step: Step{From: 3, To: 0},
 			in: State{
 				Bottles: []Bottle{
 					{Colors: []Color{Red, Blue, Empty}},
@@ -116,7 +112,7 @@ func TestPour(t *testing.T) {
 				t.Error(err)
 			}
 
-			if err := tc.in.Pour(tc.from, tc.to); err != nil {
+			if err := tc.in.Apply(tc.step); err != nil {
 				t.Fatal(err)
 			}
 
