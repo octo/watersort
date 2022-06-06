@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>State Show</title> 
+        <style lang="text/css">
+            .bottle {
+                display: inline-block;
+                margin: 10px;
+                position: relative;
+                border: 1px dashed gray;
+                width: 40px;
+                height: calc({{.State.BottleSize}} * 30px);
+            }
+            .color {
+                position: absolute;
+                width: 40px;
+                height: 30px;
+                left: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="step">
+            {{if .Solved -}}
+            <div>Easy peasy, lemon sequeezy!</div>
+            {{- else -}}
+            <div>Pour {{.Step.From}} onto {{.Step.To}} (color {{.Step.Color}})</div>
+            {{- end}}
+            {{range $i, $bottle := .State.Bottles}}
+            <div class="bottle"
+            {{- if not $.Solved}}
+            {{- if eq $i $.Step.From}} style="box-shadow: 0px 0px 10px maroon;"
+            {{- else if eq $i $.Step.To}} style="box-shadow: 0px 0px 10px darkgreen;"{{end}}
+            {{- end}}>
+                {{range $j, $color := $bottle.Colors}}
+                <div class="color" style="background-color: {{$color}}; bottom: calc({{$j}} * 30px);"></div>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+        {{if not .Solved}}<a href="{{.NextURL}}">Next Step</a>{{end}}
+    </body>
+</html>
